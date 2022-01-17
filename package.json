@@ -2,14 +2,24 @@
   "name": "user-moderator",
   "version": "0.0.0",
   "description": "crowd control for remo.tv discord server",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Brooke Morrison",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
     "axios": "^0.24.0",
+    "discord-api-types": "^0.26.1",
     "discord.js": "^13.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.2.0"
   }
 }

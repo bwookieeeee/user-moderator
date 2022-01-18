@@ -29,6 +29,20 @@ this.ws.onmessage = async evt => {
   }
 };
 
+module.exports.issueWSBan = (target, ban = true) => {
+  const isIp = target.indexOf(".") >= 0;
+
+  this.ws.send(
+    JSON.stringify({
+      e: ban ? "INTERNAL_LISTENER_BAN" : "INTERNAL_LISTENER_UNBAN",
+      d: {
+        username: isIp ? "" : target,
+        ip: isIp ? target : ""
+      }
+    })
+  );
+};
+
 const handleLoginEvent = async data => {
   const axios = require("axios");
   const { ipApiKey } = require("./config.json").misc;

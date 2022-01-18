@@ -3,8 +3,7 @@ const { key, url } = require("./config.json").remo;
 const EventEmitter = require("events");
 
 module.exports.ws = new WebSocket(url);
-module.exports.remoevts = new EventEmitter;
-
+module.exports.remoevts = new EventEmitter();
 
 this.ws.onopen = () => {
   // this.ws.login();
@@ -13,12 +12,14 @@ this.ws.onopen = () => {
 };
 
 module.exports.ws.login = () => {
-  this.ws.send(JSON.stringify({
-    e: "INTERNAL_LISTENER_AUTHENTICATE",
-    d: {
-      key: key
-    }
-  }));
+  this.ws.send(
+    JSON.stringify({
+      e: "INTERNAL_LISTENER_AUTHENTICATE",
+      d: {
+        key: key
+      }
+    })
+  );
   console.log("ws authenticated");
 };
 
@@ -52,7 +53,9 @@ const handleLoginEvent = async data => {
   const { hardwareConcurrency, renderer, userAgent, width, height } = args;
   const { username, ip, internalUsernameBanned, internalIpBanned, id } = data;
   console.log(`New login: ${username} @ ${ip}`);
-  const res = await axios.get(`https://ipqualityscore.com/api/json/ip/${ipApiKey}/${ip}`);
+  const res = await axios.get(
+    `https://ipqualityscore.com/api/json/ip/${ipApiKey}/${ip}`
+  );
   if (res.data.success) {
     isp = res.data.ISP;
     countryCode = res.data.country_code;
@@ -60,12 +63,10 @@ const handleLoginEvent = async data => {
       proxy = "**Proxy detected: ";
       if (res.data.active_vpn) proxy += "VPN**";
       if (res.data.active_tor) proxy += "TOR**";
-    }
-    else {
+    } else {
       proxy = "No proxy detected";
     }
-  }
-  else {
+  } else {
     console.error(res.data.message);
     isp = countryCode = proxy = "Error occurred while polling external API";
   }

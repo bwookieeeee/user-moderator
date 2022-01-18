@@ -4,7 +4,9 @@ const { Routes } = require("discord-api-types/v9");
 const { clientId, guildId, token } = require("./config.json").discord;
 
 const cmds = [];
-const cmdFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+const cmdFiles = fs
+  .readdirSync("./commands")
+  .filter(file => file.endsWith(".js"));
 
 for (const file of cmdFiles) {
   const cmd = require(`./commands/${file}`);
@@ -13,6 +15,7 @@ for (const file of cmdFiles) {
 
 const rest = new REST({ version: "9" }).setToken(token);
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: cmds })
+rest
+  .put(Routes.applicationGuildCommands(clientId, guildId), { body: cmds })
   .then(() => console.log("Successfully registered application commands."))
   .catch(console.error);

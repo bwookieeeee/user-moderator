@@ -13,11 +13,17 @@ module.exports = {
     .addStringOption(option => option.setName("target").setDescription("User or IP to ban").setRequired(true))
     .addBooleanOption(option => option.setName("prejudiced").setDescription("To ban with prejudice").setRequired(false)),
   async execute(interaction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     const target = interaction.options.getString("target");
     const prejudiced = interaction.options.getBoolean("prejudiced");
     console.log(`Ban initiated by ${interaction.user.username} w opts { ${target}, ${prejudiced} }`);
-    // This is where you would call to the ban handler.
-    await interaction.followUp(`This isn't implemented yet.`);
+    await interaction.editReply({ content: `A ban wasn't actually sent yet lol`, ephemeral: true });
+    return {
+      action: "ban",
+      actioner: interaction.user,
+      target,
+      prejudiced,
+      banned: true
+    }
   },
 };

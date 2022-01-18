@@ -42,19 +42,41 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-
-  // console.log(interaction);
-
-  const cmd = client.commands.get(interaction.commandName);
-  if (!cmd) return;
-
-  try {
-    await cmd.execute(interaction);
+  if (interaction.isCommand()) {
+    // console.log(interaction);
+    const cmd = client.commands.get(interaction.commandName);
+    if (!cmd) return;
+    try {
+      const response = await cmd.execute(interaction);
+      switch (response.action) {
+        case "ban": 
+          await sendBannedMessage(response.actioner, response.target, true);
+      }
+    }
+    catch (err) {
+      console.error(err);
+      await interaction.reply({ content: "There was an error while executing this command", ephemeral: true });
+    }
   }
-  catch (err) {
-    console.error(err);
-    await interaction.reply({ content: "There was an error while executing this command", ephemeral: true });
+  else if (interaction.isButton()) {
+    const cmd = interaction.customId.split('_');
+    switch (cmd[1]) {
+      case "uban":
+        // Username ban
+
+        break;
+      case "iban":
+        // IP ban
+        break;
+      case "pban":
+        // Prejudiced ban
+        break;
+      case "nuke":
+        // Nuke
+        break;
+      default:
+        await interaction.reply("Unknown button command...");
+    }
   }
 });
 
@@ -77,24 +99,43 @@ remoevts.on("NEW_LOGIN", data => {
       new MessageButton()
         .setCustomId(`${id}_uban`)
         .setLabel("Ban Username")
+        .setDisabled(true) // These will be enabled when they are implemented.
         .setStyle("PRIMARY"),
       new MessageButton()
         .setCustomId(`${id}_iban`)
         .setLabel("Ban IP Address")
+        .setDisabled(true) // These will be enabled when they are implemented.
         .setStyle("PRIMARY"),
       new MessageButton()
         .setCustomId(`${id}_pban`)
         .setLabel("Ban user & IP with prejudice")
+        .setDisabled(true) // These will be enabled when they are implemented.
         .setStyle("PRIMARY"),
       new MessageButton()
         .setCustomId(`${id}_nuke`)
         .setLabel("Nuke")
         .setStyle("DANGER")
-        .setDisabled(true)
+        .setDisabled(true) // These will be enabled when they are implemented.
     );
 
   testChannel.send({ embeds: [embed], components: [btns] });
 });
+
+const sendBannedMessage = async (actioner, target, banned = true, prejudiced = false) => {
+  const isIp = target.indexOf(".") >= 0;
+  const title = `${isIp ? "IP Address" : "Username"} ${banned ? "Banned" : "Unbanned"} ${prejudiced ? "with prejudice" : ""}`;
+  const color = banned ? "#c93006" : "#06c0c9";
+
+  const embed = new MessageEmbed()
+    .setTitle(title)
+    .setColor(color)
+    .setDescription(`${target} ${banned ? "" : "un"}banned by ${actioner}`)
+    .setTimestamp();
+
+  await testChannel.send({ embeds: [embed]});
+
+
+}
 
 const updateState = data => {
   const { id, username, ip } = data;

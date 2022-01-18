@@ -22,10 +22,6 @@
         "allowSingleLine": true
       }
     ],
-    "comma-dangle": [
-      "warn",
-      "always-multiline"
-    ],
     "comma-spacing": "warn",
     "comma-style": "warn",
     "curly": [

@@ -36,7 +36,7 @@ const handleLoginEvent = async data => {
   const args = JSON.parse(Buffer.from(data.alt, "base64").toString());
 
   const { hardwareConcurrency, renderer, userAgent, width, height } = args;
-  const { username, ip, internalUsernameBanned, internalIpBanned } = data;
+  const { username, ip, internalUsernameBanned, internalIpBanned, id } = data;
   console.log(`New login: ${username} @ ${ip}`);
   const res = await axios.get(`https://ipqualityscore.com/api/json/ip/${ipApiKey}/${ip}`);
   if (res.data.success) {
@@ -69,6 +69,6 @@ const handleLoginEvent = async data => {
     ipBanned: internalIpBanned,
     width: width,
     height: height,
-    time: Date.now()
+    id
   };
 };

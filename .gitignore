@@ -127,3 +127,4 @@ dist
 .pnp.*
 
 src/config.json
+state.json

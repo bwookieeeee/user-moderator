@@ -4,7 +4,7 @@ copyright (R) 2022 Brooke Morrison ALL RIGHTS RESERVED
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`);
 
 const fs = require("fs");
-const { Client, Collection, Intents, MessageEmbed } = require('discord.js');
+const { Client, Collection, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { token, eventChannelId, logChannelId, testChannelId } = require('./config.json').discord;
 const { ws, remoevts } = require("./remo");
 
@@ -20,9 +20,18 @@ for (const file of cmdFiles) {
   client.commands.set(cmd.data.name, cmd);
 }
 
+let state;
+
 let eventChannel;
 let logChannel;
 let testChannel;
+
+try {
+  state = JSON.parse(fs.readFileSync("state.json"));
+}
+catch (e) {
+  state = { users: {} };
+}
 
 client.once('ready', async () => {
   console.log('Ready');
@@ -51,8 +60,8 @@ client.on('interactionCreate', async interaction => {
 
 // Report when a user logs in
 remoevts.on("NEW_LOGIN", data => {
-  const { username, cores, gpu, userAgent, ip, countryCode, isp, proxy, usernameBanned, ipBanned, width, height, time } = data;
-
+  const { username, cores, gpu, userAgent, ip, countryCode, isp, proxy, usernameBanned, ipBanned, width, height, id } = data;
+  updateState(data);
   const embed = new MessageEmbed()
     .setColor("#9DFF00")
     .setTitle(username)
@@ -63,8 +72,39 @@ remoevts.on("NEW_LOGIN", data => {
       + `\n**IP Banned:** ${ipBanned}\n**Width:** ${width}\n**Height:** ${height}`)
     .setTimestamp();
 
-  testChannel.send({ embeds: [embed] });
+  const btns = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId(`${id}_uban`)
+        .setLabel("Ban Username")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId(`${id}_iban`)
+        .setLabel("Ban IP Address")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId(`${id}_pban`)
+        .setLabel("Ban user & IP with prejudice")
+        .setStyle("PRIMARY"),
+      new MessageButton()
+        .setCustomId(`${id}_nuke`)
+        .setLabel("Nuke")
+        .setStyle("DANGER")
+        .setDisabled(true)
+    );
+
+  testChannel.send({ embeds: [embed], components: [btns] });
 });
 
+const updateState = data => {
+  const { id, username, ip } = data;
+  state.users[id] = {
+    userId: id,
+    username: username,
+    ip: ip
+  };
+
+  fs.writeFileSync("state.json", JSON.stringify(state));
+};
 
 client.login(token);

@@ -17,12 +17,14 @@ const pool = new Pool({
  * @property {string} username
  * @property {string[]} ips
  * @property {boolean} banned
+ * @property {boolean} prejudiced
  */
 
 /**
  * @typedef DbIp
  * @property {string} ip
  * @property {boolean} banned
+ * @property {boolean} prejudiced
  */
 
 /**
@@ -63,11 +65,11 @@ module.exports.getIp = async addr => {
  * @returns
  */
 module.exports.createUser = async user => {
-  const { id, username, ips, banned } = user;
+  const { id, username, ips, banned, prejudiced } = user;
   try {
     await pool.query(
-      "INSERT INTO users (id, username, ips, banned) VALUES ($1,$2,$3,$4)",
-      [id, username, ips, banned]
+      "INSERT INTO users (id, username, ips, banned, prejudiced) VALUES ($1,$2,$3,$4,$5)",
+      [id, username, ips, banned, prejudiced]
     );
     return { status: "created" };
   } catch (e) {
@@ -94,17 +96,19 @@ module.exports.updateUser = async user => {
   const existingUser = await this.getUser(user.username);
   const banned = user.banned || existingUser.banned;
   const ips = user.ips || existingUser.ips;
+  const prejudiced = user.prejudiced || existingUser.prejudiced;
 
   try {
     await pool.query(
-      "UPDATE TABLE users SET (ips, banned) VALUES ($1,$2) WHERE username=$3",
-      [ips, banned, user.username]
+      "UPDATE TABLE users SET (ips, banned) VALUES ($1,$2,$3) WHERE username=$4",
+      [ips, banned, prejudiced, user.username]
     );
     return {
       id: existingUser.id,
       username: existingUser.username,
       ips: ips,
-      banned: banned
+      banned: banned,
+      prejudiced: prejudiced
     };
   } catch (e) {
     console.error(e);
@@ -114,8 +118,9 @@ module.exports.updateUser = async user => {
 
 module.exports.updateIp = async ip => {
   try {
-    await pool.query("UPDATE TABLE ips SET banned=$1 WHERE ip=$2", [
+    await pool.query("UPDATE TABLE ips SET (banned, prejudiced) VALUES ($1,$2) WHERE ip=$3", [
       ip.banned,
+      ip.prejudiced,
       ip.addr
     ]);
     return ip;

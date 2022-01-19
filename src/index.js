@@ -15,6 +15,7 @@ const {
 const { token, eventChannelId, logChannelId, testChannelId } =
   require("./config.json").discord;
 const { ws, remoevts } = require("./remo");
+const database = require("./database");
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
@@ -60,6 +61,7 @@ client.on("interactionCreate", async interaction => {
       switch (response.action) {
         case "ban":
           await sendBannedMessage(response.actioner, response.target, true);
+          
       }
     } catch (err) {
       console.error(err);

@@ -33,6 +33,7 @@ const pool = new Pool({
  * @returns {DbUser | undefined | Error} user object if found, undefined if not found, err otherwise
  */
 module.exports.getUser = async username => {
+  console.log(`get user ${username} from db`);
   try {
     const res = await pool.query("SELECT * FROM users WHERE username=$1", [
       username
@@ -50,6 +51,7 @@ module.exports.getUser = async username => {
  * @returns {DbIp | undefined | Error} ip object if found, undefined if not found, err otherwise
  */
 module.exports.getIp = async addr => {
+  console.log(`get ip ${addr} from db`);
   try {
     const res = await pool.query("SELECT * FROM ips WHERE ip=$1", [addr]);
     return res.rows[0];
@@ -66,6 +68,9 @@ module.exports.getIp = async addr => {
  */
 module.exports.createUser = async user => {
   const { id, username, ips, banned, prejudiced } = user;
+  console.log(
+    `create user ${username} w opts { ${id}, ${ips}, ${banned}, ${prejudiced} }`
+  );
   try {
     await pool.query(
       "INSERT INTO users (id, username, ips, banned, prejudiced) VALUES ($1,$2,$3,$4,$5)",
@@ -79,12 +84,13 @@ module.exports.createUser = async user => {
 };
 
 module.exports.createIp = async ip => {
-  const { addr, banned } = ip;
+  const { addr, banned, prejudiced } = ip;
+  console.log(`create ip ${addr} w opts { ${banned}, ${prejudiced} }`);
   try {
-    await pool.query("INSERT INTO ips (ip, banned) VALUES ($1,$2)", [
-      addr,
-      banned
-    ]);
+    await pool.query(
+      "INSERT INTO ips (ip, banned, prejudiced) VALUES ($1,$2,$3)",
+      [addr, banned, prejudiced]
+    );
     return { status: "created" };
   } catch (e) {
     console.error(e);
@@ -97,10 +103,13 @@ module.exports.updateUser = async user => {
   const banned = user.banned || existingUser.banned;
   const ips = user.ips || existingUser.ips;
   const prejudiced = user.prejudiced || existingUser.prejudiced;
+  console.log(
+    `update user ${user.username} w opts { ${banned}, ${prejudiced}, ${ips} }`
+  );
 
   try {
     await pool.query(
-      "UPDATE TABLE users SET (ips, banned) VALUES ($1,$2,$3) WHERE username=$4",
+      "UPDATE TABLE users SET (ips, banned, prejudiced) VALUES ($1,$2,$3) WHERE username=$4",
       [ips, banned, prejudiced, user.username]
     );
     return {
@@ -117,12 +126,12 @@ module.exports.updateUser = async user => {
 };
 
 module.exports.updateIp = async ip => {
+  console.log(`update ip ${ip.addr} w opts { ${ip.banned}, ${ip.prejudiced} }`);
   try {
-    await pool.query("UPDATE TABLE ips SET (banned, prejudiced) VALUES ($1,$2) WHERE ip=$3", [
-      ip.banned,
-      ip.prejudiced,
-      ip.addr
-    ]);
+    await pool.query(
+      "UPDATE TABLE ips SET (banned, prejudiced) VALUES ($1,$2) WHERE ip=$3",
+      [ip.banned, ip.prejudiced, ip.addr]
+    );
     return ip;
   } catch (e) {
     console.error(e);

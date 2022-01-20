@@ -82,6 +82,38 @@ Slash commands can be issued anywhere in the guild, and replies are ephemeral,
 meaning that only the issuer will see them. Special notifications are sent to
 a moderation logging channel as well.
 
+
+## Config
+A file named `config.json` is required in the `/src` directory to function. This
+file should never be committed.
+
+```json
+{
+  "discord": {
+    "token": "Your Discord Bot token",
+    "guildId": "012345678901234567",
+    "clientId": "987654321098765432",
+    "eventChannelId": "246824682468246824",
+    "logChannelId": "135791357913579135",
+  },
+  "database": {
+    "user": "postgres",
+    "host": "127.0.0.1",
+    "database": "user_moderation",
+    "password": "hahano",
+    "port": 5432
+  },
+  "remo": {
+    "key": "superultraomegano",
+    "url": "thatsasecr.et"
+  },
+  "misc": {
+    "ipApiKey": "0123456789ABCDEF0123456789ABCDEF"
+  }
+}
+
+```
+
 ---
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=6a5e47418591&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source)

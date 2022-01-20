@@ -16,12 +16,19 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     const target = interaction.options.getString("target");
     console.log(
       `Unban initiated by ${interaction.user.username} w opts { ${target} }`
     );
-    // This is where you would call the unban handler.
-    await interaction.followUp("This isn't implemented yet.");
+    await interaction.editReply({
+      content: `Unbanned ${target}`,
+      ephemeral: true
+    });
+    return {
+      action: "unban",
+      actioner: interaction.user,
+      target
+    };
   }
 };

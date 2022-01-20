@@ -30,7 +30,7 @@ this.ws.onmessage = async evt => {
   }
 };
 
-module.exports.issueWSBan = (target, ban = true) => {
+module.exports.ws.issueWSBan = (target, ban = true) => {
   const isIp = target.indexOf(".") >= 0;
 
   this.ws.send(

@@ -27,20 +27,20 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
     const target = interaction.options.getString("target");
-    const prejudiced = interaction.options.getBoolean("prejudiced");
+    let prejudiced = interaction.options.getBoolean("prejudiced");
     console.log(
       `Ban initiated by ${interaction.user.username} w opts { ${target}, ${prejudiced} }`
     );
+    if (prejudiced == null) prejudiced = false;
     await interaction.editReply({
-      content: `A ban wasn't actually sent yet lol`,
+      content: `Banned ${target} ${prejudiced ? "with prejudice" : ""}`,
       ephemeral: true
     });
     return {
       action: "ban",
       actioner: interaction.user,
       target,
-      prejudiced,
-      banned: true
+      prejudiced
     };
   }
 };

@@ -31,19 +31,36 @@ module.exports = {
 
     let toBan = [];
     if (target === "users" || target === "all") {
-      // Pull all banned users from db
-      toBan.push();
+      const bannedUsers = await require("../database").getAllBannedUsers();
+      for (let bannedUser of bannedUsers) {
+        toBan.push(bannedUser.username);
+      }
     }
     if (target === "ips" || target === "all") {
-      // Pull all banned IPs from db.
-      toBan.push();
+      const bannedIps = await require("../database").getAllBannedIps();
+      for (let bannedIp of bannedIps) {
+        toBan.push(bannedIp.ip);
+      }
     }
 
     try {
       await interaction.editReply(
-        `This isn't implemented yet; but if it were, ${toBan.length} bans would've been sent.`
+        `Banning ${toBan.length} usernames and IP addresses...`
       );
-      // this is where you'd do the banning if that were implemented yet.
+      const ws = require("../remo").ws;
+      for (let i = 0; i < toBan.length; i++) {
+        ws.issueWSBan(toBan[i]);
+      }
+      await interaction.followUp({
+        content: "Mass ban complete.",
+        ephemeral: true
+      });
+      return { 
+        action: "massban",
+        actioner: interaction.user,
+        target: target,
+        count: toBan.length
+      }
     } catch (e) {
       await interaction.editReply(
         "Couldn't complete request, please check logs."

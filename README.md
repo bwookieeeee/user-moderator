@@ -118,3 +118,5 @@ file should never be committed.
 ---
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=6a5e47418591&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source)
+<a href="https://discord.gg/dhkCweA" ><img src="https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png" height="64"/></a>
+<a href="https://reddit.com/r/remotv" ><img src="https://www.redditinc.com/assets/images/site/reddit-logo.png" height="64"/></a>

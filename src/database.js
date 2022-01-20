@@ -13,7 +13,6 @@ const pool = new Pool({
 
 /**
  * @typedef DbUser
- * @property {string} id
  * @property {string} username
  * @property {string[]} ips
  * @property {boolean} banned
@@ -67,14 +66,14 @@ module.exports.getIp = async addr => {
  * @returns
  */
 module.exports.createUser = async user => {
-  const { id, username, ips, banned, prejudiced } = user;
+  const { username, ips, banned, prejudiced } = user;
   console.log(
-    `create user ${username} w opts { ${id}, ${ips}, ${banned}, ${prejudiced} }`
+    `create user ${username} w opts {${ips}, ${banned}, ${prejudiced} }`
   );
   try {
     await pool.query(
-      "INSERT INTO users (id, username, ips, banned, prejudiced) VALUES ($1,$2,$3,$4,$5)",
-      [id, username, ips, banned, prejudiced]
+      "INSERT INTO users (username, ips, banned, prejudiced) VALUES ($1,$2,$3,$4)",
+      [username, ips, banned, prejudiced]
     );
     return { status: "created" };
   } catch (e) {
@@ -114,7 +113,6 @@ module.exports.updateUser = async user => {
       [ips, banned, prejudiced, user.username]
     );
     return {
-      id: existingUser.id,
       username: existingUser.username,
       ips: ips,
       banned: banned,

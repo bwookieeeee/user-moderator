@@ -1,4 +1,5 @@
 # User Moderator
+[![CodeQL](https://github.com/bwookieeeee/user-moderator/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/bwookieeeee/user-moderator/actions/workflows/codeql-analysis.yml)
 
 Digital crowd control for [Remo.TV](https://remo.tv) via [Discord.](https://discord.gg/dhkCweA)
 

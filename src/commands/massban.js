@@ -19,7 +19,8 @@ module.exports = {
         .addChoice("users", "users")
         .addChoice("ips", "ips")
         .addChoice("all", "all")
-    ),
+    )
+    .setDefaultPermission(false),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
     const target = interaction.options.getString("target", false)

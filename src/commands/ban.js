@@ -23,7 +23,8 @@ module.exports = {
         .setName("prejudiced")
         .setDescription("To ban with prejudice")
         .setRequired(false)
-    ),
+    )
+    .setDefaultPermission(false),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
     const target = interaction.options.getString("target");

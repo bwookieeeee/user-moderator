@@ -14,7 +14,8 @@ module.exports = {
         .setName("target")
         .setDescription("User or IP to unban")
         .setRequired(true)
-    ),
+    )
+    .setDefaultPermission(false),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
     const target = interaction.options.getString("target");

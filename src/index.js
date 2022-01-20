@@ -12,7 +12,7 @@ const {
   MessageActionRow,
   MessageButton
 } = require("discord.js");
-const { token, eventChannelId, logChannelId, testChannelId } =
+const { token, eventChannelId, logChannelId } =
   require("./config.json").discord;
 const { ws, remoevts } = require("./remo");
 const database = require("./database");
@@ -35,7 +35,6 @@ let state;
 
 let eventChannel;
 let logChannel;
-let testChannel;
 
 try {
   state = JSON.parse(fs.readFileSync("state.json"));
@@ -48,7 +47,6 @@ client.once("ready", async () => {
   ws.login();
   eventChannel = await client.channels.fetch(eventChannelId);
   logChannel = await client.channels.fetch(logChannelId);
-  testChannel = await client.channels.fetch(testChannelId);
 });
 
 client.on("interactionCreate", async interaction => {
@@ -176,7 +174,7 @@ const reportBannedAlts = async target => {
       .setDescription(desc)
       .setTimestamp();
 
-    await testChannel.send({ embeds: [embed] });
+    await eventChannel.send({ embeds: [embed] });
   }
   console.log(
     `${foundUsers.length} alternate accounts discovered for ${target}`
@@ -236,7 +234,7 @@ remoevts.on("NEW_LOGIN", async data => {
       .setDisabled(true) // These will be enabled when they are implemented.
   );
 
-  testChannel.send({ embeds: [embed], components: [btns] });
+  eventChannel.send({ embeds: [embed], components: [btns] });
   // await reportBannedAlts(username);
 });
 
@@ -253,7 +251,7 @@ const sendMassBanMessage = async (actioner, target, count) => {
     .setDescription(message)
     .setTimestamp();
 
-  await testChannel.send({ embeds: [embed] });
+  await logChannel.send({ embeds: [embed] });
 };
 
 const sendBannedMessage = async (
@@ -274,7 +272,7 @@ const sendBannedMessage = async (
     .setDescription(`${target} ${banned ? "" : "un"}banned by ${actioner}`)
     .setTimestamp();
 
-  await testChannel.send({ embeds: [embed] });
+  await logChannel.send({ embeds: [embed] });
 };
 
 const updateState = data => {

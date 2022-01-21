@@ -17,6 +17,17 @@ const { token, eventChannelId, logChannelId } =
 const { ws, remoevts } = require("./remo");
 const database = require("./database");
 
+// Discord branded colors, see https://discord.com/branding
+const colors = {
+  blurple: "#5865f2",
+  green: "#57f287",
+  yellow: "#fee75c",
+  fuchsia: "#eb459e",
+  red: "#ed4245",
+  white: "#ffffff",
+  black: "#000000"
+};
+
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 client.commands = new Collection();
@@ -155,7 +166,7 @@ const reportBannedAlts = async target => {
   // foundUsers = newUsers.map(e => e.username);
   foundUsers = [...new Set(foundUsers)];
   foundUsers.splice(foundUsers.indexOf(mainUser), 1);
-  
+
   if (foundUsers.length > 0) {
     let desc = "";
     for (let usr of foundUsers) {
@@ -163,14 +174,14 @@ const reportBannedAlts = async target => {
         usr.username
       }${usr.banned ? "**" : ""}${usr.prejudiced ? "*" : ""}\n`;
     }
-    
+
     if (bannedIps > 0) {
       bannedIps = [...new Set(bannedIps)];
-      desc += `And these banned IP addresses:\n${bannedIps.toString()}`
+      desc += `And these banned IP addresses:\n${bannedIps.toString()}`;
     }
     const embed = new MessageEmbed()
       .setTitle("Alternate Accounts Discovered")
-      .setColor("#06c0c9")
+      .setColor(colors.blurple)
       .setDescription(desc)
       .setTimestamp();
 
@@ -198,18 +209,22 @@ remoevts.on("NEW_LOGIN", async data => {
     height,
     id
   } = data;
+  let embeds = [];
   updateState(data);
-  const embed = new MessageEmbed()
-    .setColor("#9DFF00")
-    .setTitle(username)
-    .setURL("https://remo.tv")
-    .setDescription(
-      `**Cores:** ${cores}\n**GPU:** ${gpu}` +
-        `\n**IP Address:** ${ip}\n**User-Agent:** ${userAgent}\n**Country Code:** ${countryCode}` +
-        `\n**ISP:** ${isp}\n**Proxy:** ${proxy}\n**Username Banned:** ${usernameBanned}` +
-        `\n**IP Banned:** ${ipBanned}\n**Width:** ${width}\n**Height:** ${height}`
-    )
-    .setTimestamp();
+  const dbUser = await database.getUser(username);
+  embeds.push(
+    new MessageEmbed()
+      .setColor(colors.green)
+      .setTitle(username)
+      .setURL("https://remo.tv")
+      .setDescription(
+        `**Cores:** ${cores}\n**GPU:** ${gpu}` +
+          `\n**IP Address:** ${ip}\n**User-Agent:** ${userAgent}\n**Country Code:** ${countryCode}` +
+          `\n**ISP:** ${isp}\n**Proxy:** ${proxy}\n**Username Banned:** ${usernameBanned}` +
+          `\n**IP Banned:** ${ipBanned}\n**Width:** ${width}\n**Height:** ${height}`
+      )
+      .setTimestamp()
+  );
 
   const btns = new MessageActionRow().addComponents(
     new MessageButton()
@@ -234,7 +249,22 @@ remoevts.on("NEW_LOGIN", async data => {
       .setDisabled(true) // These will be enabled when they are implemented.
   );
 
-  eventChannel.send({ embeds: [embed], components: [btns] });
+  if (dbUser === undefined) {
+    embeds.push(
+      new MessageEmbed()
+        .setTitle(`**${username}** is a New Account.`)
+        // .setDescription(`**${username}** is a new account.`)
+        .setColor(colors.yellow)
+    );
+    embeds[0].setColor(colors.fuchsia);
+    await database.createUser({
+      username: username,
+      ips: [ip],
+      banned: usernameBanned,
+      prejudiced: false
+    });
+  }
+  eventChannel.send({ embeds: embeds, components: [btns] });
   // await reportBannedAlts(username);
 });
 
@@ -247,7 +277,7 @@ const sendMassBanMessage = async (actioner, target, count) => {
   const message = `${actioner} mass banned ${count} ${targetMessage}`;
   const embed = new MessageEmbed()
     .setTitle(title)
-    .setColor("#c93006")
+    .setColor(colors.red)
     .setDescription(message)
     .setTimestamp();
 
@@ -268,7 +298,7 @@ const sendBannedMessage = async (
 
   const embed = new MessageEmbed()
     .setTitle(title)
-    .setColor(color)
+    .setColor(colors.red)
     .setDescription(`${target} ${banned ? "" : "un"}banned by ${actioner}`)
     .setTimestamp();
 

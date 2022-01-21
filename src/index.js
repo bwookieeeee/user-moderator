@@ -207,7 +207,8 @@ remoevts.on("NEW_LOGIN", async data => {
     ipBanned,
     width,
     height,
-    id
+    id,
+    isTor
   } = data;
   let embeds = [];
   updateState(data);
@@ -248,6 +249,17 @@ remoevts.on("NEW_LOGIN", async data => {
       .setStyle("DANGER")
       .setDisabled(true) // These will be enabled when they are implemented.
   );
+
+  if (isTor) {
+    embeds.push(
+      new MessageEmbed()
+        .setTitle(`Tor Address Discovered`)
+        .setDescription("Banning IP address only.")
+        .setColor(colors.red)
+    )
+    await banViaDiscord(ip, client.user);
+  }
+
 
   if (dbUser === undefined) {
     embeds.push(

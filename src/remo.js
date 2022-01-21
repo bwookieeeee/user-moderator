@@ -84,6 +84,7 @@ const handleLoginEvent = async data => {
     ipBanned: internalIpBanned,
     width: width,
     height: height,
-    id
+    id,
+    isTor: res.data.active_tor
   };
 };
